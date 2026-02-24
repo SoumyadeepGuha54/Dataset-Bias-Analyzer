@@ -1,0 +1,693 @@
+/* ═══════════════════════════════════════════════════════════════
+   Dataset Bias Analyzer — Light Theme (Forced)
+   All colors use !important to override Streamlit's dark mode
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+* {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+}
+
+/* Force light background on entire app regardless of browser theme */
+.stApp,
+[data-theme="dark"] .stApp {
+  background: #f8f9fa !important;
+  color: #1f2937 !important;
+}
+
+/* Force light on the root streamlit containers */
+.stApp > header,
+.stApp [data-testid="stHeader"] {
+  background: #f8f9fa !important;
+}
+
+/* Override all Streamlit dark-mode text injections */
+.stMarkdown,
+.stMarkdown p,
+.stMarkdown div,
+.stMarkdown span,
+p,
+div,
+span,
+[data-theme="dark"] .stMarkdown,
+[data-theme="dark"] p,
+[data-theme="dark"] div,
+[data-theme="dark"] span {
+  color: #1f2937 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #111827 !important;
+}
+
+/* Override Streamlit's dark background on main block */
+.block-container,
+[data-theme="dark"] .block-container {
+  padding-top: 2.5rem;
+  padding-bottom: 3rem;
+  background: transparent !important;
+}
+
+/* Force light on any Streamlit element containers */
+[data-testid="stVerticalBlock"],
+[data-testid="stHorizontalBlock"],
+[data-testid="column"],
+[data-theme="dark"] [data-testid="stVerticalBlock"],
+[data-theme="dark"] [data-testid="stHorizontalBlock"],
+[data-theme="dark"] [data-testid="column"] {
+  background: transparent !important;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+[data-testid="stSidebar"],
+[data-theme="dark"] [data-testid="stSidebar"] {
+  background: #ffffff !important;
+  border-right: 1px solid #e5e7eb !important;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+[data-testid="stSidebar"] .stMarkdown,
+[data-testid="stSidebar"] label,
+[data-theme="dark"] [data-testid="stSidebar"] .stMarkdown,
+[data-theme="dark"] [data-testid="stSidebar"] label {
+  color: #374151 !important;
+}
+
+[data-testid="stSidebar"] h3,
+[data-theme="dark"] [data-testid="stSidebar"] h3 {
+  color: #111827 !important;
+  margin-bottom: 4px !important;
+}
+
+[data-testid="stSidebar"] h5,
+[data-theme="dark"] [data-testid="stSidebar"] h5 {
+  color: #374151 !important;
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+  margin-top: 0 !important;
+}
+
+.sidebar-subtitle {
+  color: #6b7280 !important;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ── Labels ────────────────────────────────────────────────── */
+label,
+[data-theme="dark"] label {
+  color: #374151 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* ── File Uploader ────────────────────────────────────────── */
+[data-testid="stFileUploader"],
+[data-theme="dark"] [data-testid="stFileUploader"] {
+  background: #ffffff !important;
+  border: 2px dashed #d1d5db !important;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+[data-testid="stFileUploader"] label,
+[data-theme="dark"] [data-testid="stFileUploader"] label {
+  color: #6b7280 !important;
+}
+
+[data-testid="stFileUploader"] button,
+[data-theme="dark"] [data-testid="stFileUploader"] button {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+/* File uploader dropzone — force light */
+[data-testid="stFileUploaderDropzone"],
+[data-theme="dark"] [data-testid="stFileUploaderDropzone"] {
+  background: #ffffff !important;
+  color: #374151 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] *,
+[data-theme="dark"] [data-testid="stFileUploaderDropzone"] * {
+  color: #374151 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] small,
+[data-theme="dark"] [data-testid="stFileUploaderDropzone"] small {
+  color: #6b7280 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] svg,
+[data-theme="dark"] [data-testid="stFileUploaderDropzone"] svg {
+  fill: #6b7280 !important;
+  stroke: #6b7280 !important;
+}
+
+/* File uploader – uploaded file info */
+[data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
+[data-theme="dark"]
+  [data-testid="stFileUploader"]
+  [data-testid="stFileUploaderFile"] {
+  background: #f9fafb !important;
+  color: #374151 !important;
+}
+
+[data-testid="stFileUploader"] [data-testid="stFileUploaderFile"] *,
+[data-theme="dark"]
+  [data-testid="stFileUploader"]
+  [data-testid="stFileUploaderFile"]
+  * {
+  color: #374151 !important;
+}
+
+/* Generic: any section inside the file uploader */
+[data-testid="stFileUploader"] section,
+[data-theme="dark"] [data-testid="stFileUploader"] section {
+  background: #ffffff !important;
+  color: #374151 !important;
+}
+
+[data-testid="stFileUploader"] section *,
+[data-theme="dark"] [data-testid="stFileUploader"] section * {
+  color: #374151 !important;
+}
+
+/* ── Select Box ───────────────────────────────────────────── */
+.stSelectbox > div > div,
+[data-theme="dark"] .stSelectbox > div > div {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px;
+  color: #1f2937 !important;
+}
+
+.stSelectbox [data-baseweb="select"],
+[data-theme="dark"] .stSelectbox [data-baseweb="select"] {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.stSelectbox [data-baseweb="select"] *,
+[data-theme="dark"] .stSelectbox [data-baseweb="select"] * {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+.stSelectbox [data-baseweb="select"] > div,
+[data-theme="dark"] .stSelectbox [data-baseweb="select"] > div {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.stSelectbox [data-baseweb="select"] > div > div,
+[data-theme="dark"] .stSelectbox [data-baseweb="select"] > div > div {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+/* Sidebar-specific selectbox overrides */
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] div,
+[data-theme="dark"]
+  [data-testid="stSidebar"]
+  .stSelectbox
+  div[data-baseweb="select"]
+  div {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+[data-testid="stSidebar"]
+  .stSelectbox
+  [data-baseweb="select"]
+  [role="combobox"],
+[data-theme="dark"]
+  [data-testid="stSidebar"]
+  .stSelectbox
+  [data-baseweb="select"]
+  [role="combobox"] {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+.stSelectbox svg,
+[data-theme="dark"] .stSelectbox svg {
+  fill: #6b7280 !important;
+}
+
+/* Dropdown menu / popover */
+[data-baseweb="popover"],
+[data-theme="dark"] [data-baseweb="popover"] {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+[data-baseweb="popover"] *,
+[data-theme="dark"] [data-baseweb="popover"] * {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+}
+
+[data-baseweb="menu"],
+[data-theme="dark"] [data-baseweb="menu"] {
+  background: #ffffff !important;
+}
+
+[data-baseweb="menu"] li,
+[data-theme="dark"] [data-baseweb="menu"] li {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+[data-baseweb="menu"] li:hover,
+[data-theme="dark"] [data-baseweb="menu"] li:hover {
+  background: #f3f4f6 !important;
+}
+
+/* Select input inner elements */
+[data-baseweb="input"],
+[data-theme="dark"] [data-baseweb="input"] {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+[data-baseweb="input"] input,
+[data-theme="dark"] [data-baseweb="input"] input {
+  color: #1f2937 !important;
+  -webkit-text-fill-color: #1f2937 !important;
+}
+
+/* ── Button ───────────────────────────────────────────────── */
+.stButton > button {
+  background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  width: 100%;
+  cursor: pointer;
+}
+
+.stButton > button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 158, 255, 0.35);
+}
+
+/* ── Upload Success ───────────────────────────────────────── */
+.upload-success {
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #047857 !important;
+  font-weight: 500;
+}
+
+/* ── Hero Section ─────────────────────────────────────────── */
+.hero-container {
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 56px !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, #4a9eff 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+  letter-spacing: -2px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: #6b7280 !important;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+/* ── Feature Cards (Landing) ──────────────────────────────── */
+.feature-title {
+  color: #1f2937 !important;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  color: #6b7280 !important;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ── Metric Cards ─────────────────────────────────────────── */
+.metric-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 100px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: #c7d2fe !important;
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #6b7280 !important;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.metric-value {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+}
+
+.value-blue {
+  color: #2563eb !important;
+}
+.value-green {
+  color: #059669 !important;
+}
+.value-red {
+  color: #dc2626 !important;
+}
+.value-amber {
+  color: #d97706 !important;
+}
+
+/* ── Status Badge ─────────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+
+.badge-success {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.badge-danger {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* ── Section Header ───────────────────────────────────────── */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827 !important;
+  margin: 16px 0 8px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+  letter-spacing: -0.3px;
+}
+
+/* ── Content Card ─────────────────────────────────────────── */
+.content-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+/* ── Data Table ───────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.data-table thead {
+  background: #f9fafb !important;
+}
+
+.data-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #6b7280 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.data-table td {
+  padding: 14px 20px;
+  color: #1f2937 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  font-size: 14px;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+.data-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #f9fafb !important;
+}
+
+/* ── Proxy Alert ──────────────────────────────────────────── */
+.proxy-alert {
+  background: #fffbeb !important;
+  border: 1px solid #fde68a !important;
+  border-left: 4px solid #f59e0b !important;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.proxy-alert-title {
+  font-weight: 600;
+  color: #b45309 !important;
+  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.proxy-alert-text {
+  color: #78716c !important;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.proxy-feature {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #b45309 !important;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-family: "SF Mono", "Monaco", "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Info Box ─────────────────────────────────────────────── */
+.info-box {
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  border-left: 4px solid #3b82f6 !important;
+  border-radius: 8px;
+  padding: 20px;
+  color: #1e40af !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.info-box strong {
+  color: #1e40af !important;
+}
+
+/* ── Success Box ──────────────────────────────────────────── */
+.success-box {
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  border-radius: 8px;
+  padding: 20px;
+  color: #047857 !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── Warning Text ─────────────────────────────────────────── */
+.warning-text {
+  color: #b45309 !important;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+/* ── Result Header ────────────────────────────────────────── */
+.result-header {
+  color: #111827 !important;
+}
+
+.result-subtitle {
+  color: #6b7280 !important;
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: #e5e7eb !important;
+  margin: 40px 0;
+}
+
+/* ── Expander ─────────────────────────────────────────────── */
+[data-testid="stExpander"],
+[data-theme="dark"] [data-testid="stExpander"] {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+}
+
+[data-testid="stExpander"] summary,
+[data-theme="dark"] [data-testid="stExpander"] summary {
+  color: #374151 !important;
+}
+
+[data-testid="stExpander"] summary svg,
+[data-theme="dark"] [data-testid="stExpander"] summary svg {
+  fill: #6b7280 !important;
+  color: #6b7280 !important;
+}
+
+/* ── Spinner ──────────────────────────────────────────────── */
+[data-testid="stSpinner"],
+[data-theme="dark"] [data-testid="stSpinner"] {
+  color: #374151 !important;
+}
+
+/* ── JSON viewer ──────────────────────────────────────────── */
+[data-testid="stJson"],
+[data-theme="dark"] [data-testid="stJson"] {
+  background: #f9fafb !important;
+  border-radius: 8px;
+  padding: 16px !important;
+}
+
+/* ── Streamlit toolbar / hamburger ────────────────────────── */
+[data-testid="stToolbar"],
+[data-theme="dark"] [data-testid="stToolbar"] {
+  background: transparent !important;
+}
+
+[data-testid="stToolbar"] button svg,
+[data-theme="dark"] [data-testid="stToolbar"] button svg {
+  fill: #6b7280 !important;
+}
+
+/* ── Chart container — force white bg so matplotlib is crisp ── */
+[data-testid="stImage"],
+[data-theme="dark"] [data-testid="stImage"],
+.stPlotlyChart,
+[data-theme="dark"] .stPlotlyChart {
+  background: #ffffff !important;
+  border-radius: 8px;
+}
+
+/* Reduce excessive space around pyplot charts */
+[data-testid="stImage"] img,
+.stImage img {
+  margin-bottom: 0 !important;
+}
+
+/* Compact Streamlit element spacing to prevent charts drifting */
+.stApp
+  [data-testid="stVerticalBlock"]
+  > [data-testid="stVerticalBlockBorderWrapper"],
+.stApp [data-testid="stVerticalBlock"] > div {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.stApp [data-testid="element-container"] {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Multiselect / BaseWeb general overrides for dark mode */
+[data-baseweb="select"] [data-baseweb="tag"],
+[data-theme="dark"] [data-baseweb="select"] [data-baseweb="tag"] {
+  background: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+[data-baseweb="select"] [data-baseweb="tag"] *,
+[data-theme="dark"] [data-baseweb="select"] [data-baseweb="tag"] * {
+  color: #1f2937 !important;
+}
