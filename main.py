@@ -1,171 +1,202 @@
 """
-Enhanced bias analysis pipeline with multi-model support and data cleaning.
+Enhanced Bias Analysis Pipeline
+================================
+Orchestrates data quality analysis, universal cleaning, multi-model training,
+and fairness evaluation.  Works with **any** tabular CSV dataset.
 """
 
-import pandas as pd
+import traceback
+import warnings
+
 import numpy as np
+import pandas as pd
+
 from engine.data_processor import prepare_data
-from engine.model_trainer import train_baseline, train_multiple_models, get_feature_importance
+from engine.model_trainer import (
+    train_baseline,
+    train_multiple_models,
+    get_feature_importance,
+)
 from engine.fairness_metrics import compute_group_metrics, compute_fairness_scores
 from engine.bias_report import generate_bias_flag
 from engine.proxy_detector import detect_proxies
 from engine.data_cleaner import analyze_data_quality, clean_dataset
 
 
-def run_bias_engine(df, target_col, sensitive_col, models=None, cleaning_config=None):
+def run_bias_engine(
+    df,
+    target_col,
+    sensitive_col,
+    models=None,
+    cleaning_config=None,
+    auto_clean=True,
+):
     """
-    Enhanced bias analysis pipeline with multi-model support and optional data cleaning.
+    Universal bias-analysis pipeline.
 
     Parameters
     ----------
     df : pd.DataFrame
-        Input dataset
+        Raw input dataset (any shape / types / messiness).
     target_col : str
-        Name of the label column (binary 0/1)
+        Target / label column name.
     sensitive_col : str
-        Name of the sensitive attribute column
-    models : list of str, optional
-        List of models to train. Options: 'logistic_regression', 'random_forest', 
-        'svm', 'xgboost'. If None, trains only logistic regression (backward compatible).
-    cleaning_config : dict, optional
-        Data cleaning configuration with keys:
-        - remove_duplicates: bool
-        - impute_missing: bool
-        - handle_outliers: bool
-        - scale_features: bool
-        - balance_classes: bool
-        If None, no cleaning is performed.
+        Sensitive-attribute column name.
+    models : list[str] | None
+        Model keys to train (``None`` → legacy single Logistic Regression).
+    cleaning_config : dict | None
+        Explicit cleaning flags passed to ``clean_dataset()``.  If *None*
+        and ``auto_clean=True``, a sensible default config is used so that
+        every dataset is guaranteed to be processable.
+    auto_clean : bool
+        When True **and** ``cleaning_config is None``, automatically apply
+        safe cleaning (duplicates, missing, infinite, whitespace, ID/constant
+        column removal, high-cardinality encoding, mixed-type fixing,
+        datetime handling).  Does NOT scale or SMOTE by default.
 
     Returns
     -------
     dict
-        Enhanced results containing:
-        - models: dict with results for each model (predictions, metrics, fairness_scores, bias_detected)
-        - proxy_variables: dict of detected proxy variables
-        - cleaning_report: dict with cleaning statistics (if cleaning was performed)
-        - data_quality: dict with quality analysis
-        - feature_names: list of feature names after encoding
+        Comprehensive results dict (see docstring body for keys).
     """
-    # Initialize results
+
+    # ── Initialise result container ──
     results = {
-        'models': {},
-        'proxy_variables': {},
-        'cleaning_report': None,
-        'data_quality': None,
+        "models": {},
+        "proxy_variables": {},
+        "cleaning_report": None,
+        "data_quality": None,
     }
-    
-    # --- Step 1: Data Quality Analysis ---
-    results['data_quality'] = analyze_data_quality(df, target_col)
-    
-    # --- Step 2: Data Cleaning (if requested) ---
+
+    # ── Step 1 – Data Quality Snapshot ──
+    try:
+        results["data_quality"] = analyze_data_quality(df, target_col)
+    except Exception as exc:
+        warnings.warn(f"Quality analysis encountered an issue: {exc}")
+        results["data_quality"] = {}
+
+    # ── Step 2 – Cleaning ──
     df_processed = df.copy()
-    if cleaning_config:
+
+    if cleaning_config is not None:
+        # Explicit user config
         df_processed, cleaning_report = clean_dataset(
             df_processed,
             target_col=target_col,
             sensitive_col=sensitive_col,
-            **cleaning_config
+            **cleaning_config,
         )
-        results['cleaning_report'] = cleaning_report
-    
-    # --- Step 3: Proxy Detection (runs on data before encoding) ---
-    results['proxy_variables'] = detect_proxies(
-        df_processed.drop(columns=[target_col], errors="ignore"),
-        sensitive_col,
-    )
+        results["cleaning_report"] = cleaning_report
+    elif auto_clean:
+        # Default safe-clean so ANY dataset can proceed
+        df_processed, cleaning_report = clean_dataset(
+            df_processed,
+            target_col=target_col,
+            sensitive_col=sensitive_col,
+            remove_duplicates=True,
+            impute_missing=True,
+            handle_outliers=True,
+            scale_features=False,
+            balance_classes=False,
+            drop_id_columns=True,
+            drop_constant_columns=True,
+            fix_whitespace=True,
+            handle_infinite=True,
+            handle_datetime=True,
+            handle_mixed_types=True,
+            high_cardinality_method="frequency",
+        )
+        results["cleaning_report"] = cleaning_report
 
-    # --- Step 4: Data Preparation ---
+    # ── Step 3 – Proxy Detection (before encoding) ──
+    try:
+        results["proxy_variables"] = detect_proxies(
+            df_processed.drop(columns=[target_col], errors="ignore"),
+            sensitive_col,
+        )
+    except Exception as exc:
+        warnings.warn(f"Proxy detection skipped: {exc}")
+        results["proxy_variables"] = {}
+
+    # ── Step 4 – Data Preparation ──
     X_train, X_test, y_train, y_test, sensitive_test = prepare_data(
         df_processed, target_col, sensitive_col
     )
-    
-    # Store feature names (after encoding)
-    if hasattr(X_train, 'columns'):
-        results['feature_names'] = X_train.columns.tolist()
-    else:
-        results['feature_names'] = [f'feature_{i}' for i in range(X_train.shape[1])]
 
-    # --- Step 5: Model Training ---
+    # Store feature names (after encoding)
+    feature_names = (
+        X_train.columns.tolist()
+        if hasattr(X_train, "columns")
+        else [f"feature_{i}" for i in range(X_train.shape[1])]
+    )
+    results["feature_names"] = feature_names
+
+    # ── Step 5 – Model Training ──
     if models is None or len(models) == 0:
-        # Backward compatibility: train only baseline logistic regression
+        # Legacy path – single Logistic Regression
         model, y_pred, accuracy = train_baseline(X_train, y_train, X_test, y_test)
-        
-        # Compute fairness metrics
+
         group_metrics = compute_group_metrics(y_test, y_pred, sensitive_test)
         fairness_scores = compute_fairness_scores(group_metrics)
         bias_flag = generate_bias_flag(fairness_scores)
-        
-        # Return old format for backward compatibility
+
         return {
             "accuracy": accuracy,
             "group_metrics": group_metrics,
             "fairness_scores": fairness_scores,
             "bias_detected": bias_flag,
-            "proxy_variables": results['proxy_variables'],
+            "proxy_variables": results["proxy_variables"],
         }
-    
+
     # Multi-model training
     model_results = train_multiple_models(X_train, y_train, X_test, y_test, models)
-    
-    # --- Step 6: Fairness Evaluation for Each Model ---
+
+    # ── Step 6 – Fairness Evaluation per model ──
     for model_name, model_data in model_results.items():
-        y_pred = model_data['predictions']
-        
-        # Compute fairness metrics
+        y_pred = model_data["predictions"]
+
         group_metrics = compute_group_metrics(y_test, y_pred, sensitive_test)
         fairness_scores = compute_fairness_scores(group_metrics)
         bias_flag = generate_bias_flag(fairness_scores)
-        
-        # Get feature importance
+
         feature_importance = get_feature_importance(
-            model_data['model'],
-            results['feature_names'],
-            model_name
+            model_data["model"], feature_names, model_name
         )
-        
-        # Store results for this model
-        results['models'][model_name] = {
-            'predictions': y_pred.tolist() if hasattr(y_pred, 'tolist') else y_pred,
-            'probabilities': model_data['probabilities'].tolist() if model_data['probabilities'] is not None else None,
-            'metrics': model_data['metrics'],
-            'group_metrics': group_metrics,
-            'fairness_scores': fairness_scores,
-            'bias_detected': bias_flag,
-            'feature_importance': feature_importance
+
+        results["models"][model_name] = {
+            "predictions": y_pred.tolist() if hasattr(y_pred, "tolist") else y_pred,
+            "probabilities": (
+                model_data["probabilities"].tolist()
+                if model_data["probabilities"] is not None
+                else None
+            ),
+            "metrics": model_data["metrics"],
+            "group_metrics": group_metrics,
+            "fairness_scores": fairness_scores,
+            "bias_detected": bias_flag,
+            "feature_importance": feature_importance,
         }
-    
-    # Store test data for visualizations
-    results['test_data'] = {
-        'y_test': y_test.tolist() if hasattr(y_test, 'tolist') else y_test,
-        'sensitive_test': sensitive_test.tolist() if hasattr(sensitive_test, 'tolist') else sensitive_test
+
+    # Test data for visualisations
+    results["test_data"] = {
+        "y_test": y_test.tolist() if hasattr(y_test, "tolist") else y_test,
+        "sensitive_test": (
+            sensitive_test.tolist()
+            if hasattr(sensitive_test, "tolist")
+            else sensitive_test
+        ),
     }
-    
+
     return results
 
 
+# ── Legacy shim ──
 def run_bias_engine_legacy(df, target_col, sensitive_col):
-    """
-    Legacy bias analysis pipeline (backward compatibility).
-    
-    This is the original function signature maintained for compatibility.
-    Use run_bias_engine() with models parameter for enhanced functionality.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-    target_col : str – name of the label column (binary 0/1)
-    sensitive_col : str – name of the sensitive attribute column
-
-    Returns
-    -------
-    dict with keys: accuracy, group_metrics, fairness_scores, bias_detected, proxy_variables
-    """
-    return run_bias_engine(df, target_col, sensitive_col, models=None, cleaning_config=None)
+    """Backward-compatible wrapper (single Logistic Regression, no cleaning)."""
+    return run_bias_engine(
+        df, target_col, sensitive_col, models=None, cleaning_config=None, auto_clean=True
+    )
 
 
 if __name__ == "__main__":
-    # Example local run
-    # df = pd.read_csv("data.csv")
-    # result = run_bias_engine(df, "target", "gender")
-    # print(result)
     pass

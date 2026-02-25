@@ -218,60 +218,107 @@ if st.session_state.quality_report is not None:
     
     quality_report = st.session_state.quality_report
     
-    # Summary metrics
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Total Rows", f"{quality_report['total_rows']:,}")
-    with col2:
-        missing_count = sum(quality_report['missing_values'].values())
-        st.metric("Missing Values", missing_count)
-    with col3:
-        st.metric("Duplicates", quality_report['duplicates'])
-    with col4:
-        outlier_count = sum(quality_report['outliers'].values())
-        st.metric("Outliers Detected", outlier_count)
+    # ── Top-level KPIs ──
+    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+    with kpi1:
+        st.metric("Rows", f"{quality_report['total_rows']:,}")
+    with kpi2:
+        missing_count = sum(quality_report.get('missing_values', {}).values())
+        st.metric("Missing Values", f"{missing_count:,}")
+    with kpi3:
+        st.metric("Duplicates", f"{quality_report.get('duplicates', 0):,}")
+    with kpi4:
+        outlier_count = sum(quality_report.get('outliers', {}).values())
+        st.metric("Outliers", f"{outlier_count:,}")
+    with kpi5:
+        inf_count = sum(quality_report.get('infinite_values', {}).values())
+        st.metric("Infinite Values", f"{inf_count:,}")
     
-    # Detailed issues
+    # ── Structural diagnostics row ──
+    diag1, diag2, diag3, diag4 = st.columns(4)
+    with diag1:
+        st.metric("ID Columns", len(quality_report.get('id_columns', [])))
+    with diag2:
+        st.metric("Constant Cols", len(quality_report.get('constant_columns', [])))
+    with diag3:
+        st.metric("High Cardinality", len(quality_report.get('high_cardinality', [])))
+    with diag4:
+        st.metric("Mixed-Type Cols", len(quality_report.get('mixed_type_columns', [])))
+    
+    # ── Detailed issues ──
     if has_quality_issues(quality_report):
-        st.warning("⚠️ Data quality issues detected. Consider cleaning the dataset before analysis.")
+        st.warning("⚠️ Data quality issues detected. Clean the dataset before analysis for best results.")
         
-        # Missing values details
-        if quality_report['missing_values']:
-            st.markdown("### Missing Values")
-            missing_df = pd.DataFrame([
-                {"Column": col, "Missing Count": count}
-                for col, count in quality_report['missing_values'].items()
-            ])
-            st.dataframe(missing_df, use_container_width=True)
+        # Missing values
+        if quality_report.get('missing_values'):
+            with st.expander(f"🔍 Missing Values ({len(quality_report['missing_values'])} columns)", expanded=False):
+                missing_df = pd.DataFrame([
+                    {"Column": col, "Missing": cnt, "% Missing": f"{quality_report.get('missing_pct', {}).get(col, 0):.1f}%"}
+                    for col, cnt in quality_report['missing_values'].items()
+                ])
+                st.dataframe(missing_df, use_container_width=True, hide_index=True)
         
-        # Outliers details
-        if quality_report['outliers']:
-            st.markdown("### Outliers")
-            outlier_df = pd.DataFrame([
-                {"Column": col, "Outlier Count": count}
-                for col, count in quality_report['outliers'].items()
-            ])
-            st.dataframe(outlier_df, use_container_width=True)
+        # Outliers
+        if quality_report.get('outliers'):
+            with st.expander(f"📈 Outliers ({len(quality_report['outliers'])} columns)", expanded=False):
+                outlier_df = pd.DataFrame([
+                    {"Column": col, "Outlier Count": cnt}
+                    for col, cnt in quality_report['outliers'].items()
+                ])
+                st.dataframe(outlier_df, use_container_width=True, hide_index=True)
+        
+        # Structural issues
+        structural_items = []
+        for label, key in [("ID Columns", "id_columns"), ("Constant Columns", "constant_columns"),
+                           ("High-Cardinality Columns", "high_cardinality"), ("Mixed-Type Columns", "mixed_type_columns"),
+                           ("Datetime Columns", "datetime_columns")]:
+            items = quality_report.get(key, [])
+            if items:
+                structural_items.append((label, items))
+        if structural_items:
+            with st.expander("🏗️ Structural Issues", expanded=False):
+                for label, items in structural_items:
+                    st.markdown(f"**{label}:** {', '.join(items)}")
+        
+        # Whitespace
+        if quality_report.get('whitespace_issues'):
+            with st.expander(f"✂️ Whitespace Issues ({len(quality_report['whitespace_issues'])} columns)", expanded=False):
+                ws_df = pd.DataFrame([
+                    {"Column": col, "Affected Rows": cnt}
+                    for col, cnt in quality_report['whitespace_issues'].items()
+                ])
+                st.dataframe(ws_df, use_container_width=True, hide_index=True)
         
         # Class distribution
-        if quality_report['class_distribution']:
-            st.markdown("### Class Distribution")
-            class_df = pd.DataFrame([
-                {"Class": cls, "Count": count}
-                for cls, count in quality_report['class_distribution'].items()
-            ])
-            st.dataframe(class_df, use_container_width=True)
+        if quality_report.get('class_distribution'):
+            with st.expander("📊 Class Distribution", expanded=False):
+                class_df = pd.DataFrame([
+                    {"Class": cls, "Count": count}
+                    for cls, count in quality_report['class_distribution'].items()
+                ])
+                st.dataframe(class_df, use_container_width=True, hide_index=True)
         
-        # Cleaning options
-        st.markdown("### Cleaning Options")
-        col1, col2 = st.columns(2)
-        with col1:
+        # ── Cleaning Options ──
+        st.markdown("### 🧹 Cleaning Options")
+        col_a, col_b, col_c = st.columns(3)
+        with col_a:
+            st.markdown("**Basic**")
             remove_dups = st.checkbox("Remove duplicates", value=True)
             impute_missing = st.checkbox("Impute missing values", value=True)
-            handle_outliers = st.checkbox("Handle outliers (IQR method)", value=True)
-        with col2:
+            handle_outliers = st.checkbox("Cap outliers (IQR)", value=True)
+            fix_whitespace = st.checkbox("Fix whitespace", value=True)
+            handle_infinite = st.checkbox("Replace infinite values", value=True)
+        with col_b:
+            st.markdown("**Structural**")
+            drop_id_columns = st.checkbox("Drop ID columns", value=True)
+            drop_constant_columns = st.checkbox("Drop constant columns", value=True)
+            handle_datetime = st.checkbox("Convert datetimes → features", value=True)
+            handle_mixed_types = st.checkbox("Fix mixed-type columns", value=True)
+        with col_c:
+            st.markdown("**Advanced**")
             scale_features = st.checkbox("Scale numerical features", value=False)
             balance_classes = st.checkbox("Balance classes (SMOTE)", value=False)
+            high_card_method = st.selectbox("High-cardinality encoding", ["frequency", "top_n", "drop"], index=0)
         
         if st.button("🧹 Clean Dataset", type="primary"):
             with st.spinner("Cleaning dataset..."):
@@ -283,20 +330,34 @@ if st.session_state.quality_report is not None:
                     impute_missing=impute_missing,
                     handle_outliers=handle_outliers,
                     scale_features=scale_features,
-                    balance_classes=balance_classes
+                    balance_classes=balance_classes,
+                    drop_id_columns=drop_id_columns,
+                    drop_constant_columns=drop_constant_columns,
+                    fix_whitespace=fix_whitespace,
+                    handle_infinite=handle_infinite,
+                    handle_datetime=handle_datetime,
+                    handle_mixed_types=handle_mixed_types,
+                    high_cardinality_method=high_card_method,
                 )
                 st.session_state.df_cleaned = cleaned_df
                 st.session_state.cleaning_performed = True
                 
                 st.success("✅ Dataset cleaned successfully!")
                 
-                # Show cleaning summary
+                # Cleaning summary
                 st.markdown("### Cleaning Summary")
-                summary_cols = st.columns(4)
-                summary_cols[0].metric("Duplicates Removed", cleaning_report['duplicates_removed'])
-                summary_cols[1].metric("Values Imputed", cleaning_report['missing_values_imputed'])
-                summary_cols[2].metric("Outliers Capped", cleaning_report['outliers_capped'])
-                summary_cols[3].metric("Final Rows", cleaning_report['final_rows'])
+                s1, s2, s3, s4, s5 = st.columns(5)
+                s1.metric("Duplicates Removed", f"{cleaning_report['duplicates_removed']:,}")
+                s2.metric("Values Imputed", f"{cleaning_report['missing_values_imputed']:,}")
+                s3.metric("Outliers Capped", f"{cleaning_report['outliers_capped']:,}")
+                s4.metric("Inf Replaced", f"{cleaning_report.get('infinite_values_replaced', 0):,}")
+                s5.metric("Final Size", f"{cleaning_report['final_rows']:,} × {cleaning_report.get('final_columns', '?')}")
+                if cleaning_report.get('columns_dropped'):
+                    st.info(f"Columns dropped: {', '.join(cleaning_report['columns_dropped'])}")
+                if cleaning_report.get('datetime_features_created'):
+                    st.info(f"Datetime features created from: {', '.join(cleaning_report['datetime_features_created'])}")
+                if cleaning_report.get('high_cardinality_encoded'):
+                    st.info(f"High-cardinality cols encoded: {', '.join(cleaning_report['high_cardinality_encoded'])}")
     else:
         st.success("✅ No data quality issues detected. Dataset is ready for analysis.")
 
@@ -321,15 +382,14 @@ if run_analysis_btn:
     
     with st.spinner(f"Training {len(selected_models)} model(s) and computing fairness metrics..."):
         try:
-            # Prepare cleaning config if cleaning was performed
-            cleaning_config = None
-            
+            # If already cleaned, skip auto-clean; otherwise auto-clean is on
             result = run_bias_engine(
                 df_to_analyze,
                 target_col,
                 sensitive_col,
                 models=selected_models,
-                cleaning_config=cleaning_config
+                cleaning_config=None,
+                auto_clean=not st.session_state.cleaning_performed,
             )
             st.session_state.analysis_results = result
         except Exception as e:

@@ -119,12 +119,17 @@ async def clean_data(
     handle_outliers: bool = Form(True, description="Handle outliers using IQR method"),
     scale_features: bool = Form(False, description="Scale numerical features"),
     balance_classes: bool = Form(False, description="Balance classes using SMOTE"),
+    drop_id_columns: bool = Form(True, description="Drop auto-detected ID columns"),
+    drop_constant_columns: bool = Form(True, description="Drop constant / single-value columns"),
+    fix_whitespace: bool = Form(True, description="Strip whitespace from string columns"),
+    handle_infinite: bool = Form(True, description="Replace infinite values with NaN then impute"),
+    handle_datetime: bool = Form(True, description="Convert datetime columns to numeric features"),
+    handle_mixed_types: bool = Form(True, description="Coerce mixed-type columns to dominant type"),
+    high_cardinality_method: str = Form("frequency", description="'frequency', 'top_n', or 'drop'"),
 ):
     """
-    Clean dataset based on specified options.
-    
-    Returns:
-        dict: Cleaned dataset as CSV string and cleaning report
+    Universal dataset cleaning endpoint.
+    Handles any CSV regardless of messiness.
     """
     # --- Validate file type ---
     if not file.filename.endswith(".csv"):
@@ -147,10 +152,16 @@ async def clean_data(
             impute_missing=impute_missing,
             handle_outliers=handle_outliers,
             scale_features=scale_features,
-            balance_classes=balance_classes
+            balance_classes=balance_classes,
+            drop_id_columns=drop_id_columns,
+            drop_constant_columns=drop_constant_columns,
+            fix_whitespace=fix_whitespace,
+            handle_infinite=handle_infinite,
+            handle_datetime=handle_datetime,
+            handle_mixed_types=handle_mixed_types,
+            high_cardinality_method=high_cardinality_method,
         )
         
-        # Convert cleaned dataframe to CSV string
         csv_buffer = io.StringIO()
         cleaned_df.to_csv(csv_buffer, index=False)
         cleaned_csv = csv_buffer.getvalue()
@@ -236,7 +247,8 @@ async def analyze(
             target_col,
             sensitive_col,
             models=model_list,
-            cleaning_config=cleaning_config
+            cleaning_config=cleaning_config,
+            auto_clean=not bool(cleaning_config),
         )
         return _serialize(result)
     except ValueError as e:
