@@ -691,3 +691,322 @@ label,
 [data-theme="dark"] [data-baseweb="select"] [data-baseweb="tag"] * {
   color: #1f2937 !important;
 }
+
+/* ── Enhanced UI Elements (v2.0) ────────────────────────────── */
+
+/* Data Quality Warning Cards */
+.quality-warning-card {
+  background: #fef3c7 !important;
+  border-left: 4px solid #f59e0b !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.quality-warning-card h4 {
+  color: #b45309 !important;
+  margin: 0 0 8px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.quality-warning-card p {
+  color: #92400e !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+}
+
+/* Data Quality Success Card */
+.quality-success-card {
+  background: #d1fae5 !important;
+  border-left: 4px solid #10b981 !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.quality-success-card p {
+  color: #065f46 !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+}
+
+/* Cleaning Configuration Section */
+.cleaning-config-section {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  margin: 16px 0 !important;
+}
+
+.cleaning-config-section h4 {
+  color: #111827 !important;
+  margin-top: 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+/* Checkboxes for cleaning options */
+[data-testid="stCheckbox"] label,
+[data-theme="dark"] [data-testid="stCheckbox"] label {
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+[data-testid="stCheckbox"] span[data-baseweb="checkbox"],
+[data-theme="dark"] [data-testid="stCheckbox"] span[data-baseweb="checkbox"] {
+  border-color: #9ca3af !important;
+}
+
+/* Tabs styling */
+[data-testid="stTabs"],
+[data-theme="dark"] [data-testid="stTabs"] {
+  background: transparent !important;
+}
+
+[data-testid="stTabs"] button[data-baseweb="tab"],
+[data-theme="dark"] [data-testid="stTabs"] button[data-baseweb="tab"] {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border: 1px solid #d1d5db !important;
+  border-bottom: none !important;
+  padding: 12px 24px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-testid="stTabs"] button[data-baseweb="tab"]:hover,
+[data-theme="dark"] [data-testid="stTabs"] button[data-baseweb="tab"]:hover {
+  background: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+[data-testid="stTabs"] button[data-baseweb="tab"][aria-selected="true"],
+[data-theme="dark"]
+  [data-testid="stTabs"]
+  button[data-baseweb="tab"][aria-selected="true"] {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-bottom: 3px solid #3b82f6 !important;
+  font-weight: 600 !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab-list"],
+[data-theme="dark"] [data-testid="stTabs"] [data-baseweb="tab-list"] {
+  gap: 4px !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  background: transparent !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab-panel"],
+[data-theme="dark"] [data-testid="stTabs"] [data-baseweb="tab-panel"] {
+  padding-top: 24px !important;
+  background: transparent !important;
+}
+
+/* Model Selection Cards */
+.model-card {
+  background: #ffffff !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  margin-bottom: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.model-card:hover {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.model-card.selected {
+  border-color: #3b82f6 !important;
+  background: #eff6ff !important;
+}
+
+.model-card h4 {
+  color: #111827 !important;
+  margin: 0 0 8px 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.model-card p {
+  color: #6b7280 !important;
+  margin: 0 !important;
+  font-size: 13px !important;
+}
+
+/* Metric cards enhancement for multi-model */
+.metric-comparison-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.metric-card-small {
+  flex: 1;
+  min-width: 200px;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.metric-card-small .metric-label {
+  font-size: 12px !important;
+  color: #6b7280 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+.metric-card-small .metric-value {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
+}
+
+/* Data quality issue badges */
+.issue-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.issue-badge.missing {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+}
+
+.issue-badge.duplicate {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+.issue-badge.outlier {
+  background: #ddd6fe !important;
+  color: #5b21b6 !important;
+}
+
+.issue-badge.imbalance {
+  background: #fce7f3 !important;
+  color: #9f1239 !important;
+}
+
+/* Comparison table styling */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background: #ffffff !important;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.comparison-table thead {
+  background: #f9fafb !important;
+}
+
+.comparison-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+.comparison-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #1f2937 !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none !important;
+}
+
+.comparison-table tr:hover {
+  background: #f9fafb !important;
+}
+
+/* Enhanced buttons (primary, secondary) */
+.stButton > button[kind="primary"],
+[data-theme="dark"] .stButton > button[kind="primary"] {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.stButton > button[kind="primary"]:hover,
+[data-theme="dark"] .stButton > button[kind="primary"]:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Progress indicators */
+.analysis-progress {
+  background: #eff6ff !important;
+  border-left: 4px solid #3b82f6 !important;
+  padding: 16px !important;
+  border-radius: 8px !important;
+  margin: 16px 0 !important;
+}
+
+.analysis-progress p {
+  color: #1e40af !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Recommendation boxes */
+.recommendation-box {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  border: 2px solid #3b82f6 !important;
+  border-radius: 10px !important;
+  padding: 20px !important;
+  margin: 16px 0 !important;
+}
+
+.recommendation-box h4 {
+  color: #1e40af !important;
+  margin: 0 0 12px 0 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.recommendation-box p {
+  color: #1e3a8a !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* Adjust existing info-box for new design */
+.info-box {
+  background: #eff6ff !important;
+  border-left: 4px solid #3b82f6 !important;
+}
