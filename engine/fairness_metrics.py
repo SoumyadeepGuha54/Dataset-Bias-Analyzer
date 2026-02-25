@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 
 def compute_group_metrics(y_true, y_pred, sensitive):
+    """
+    Compute group-level fairness metrics.
+    
+    Note: This function is designed for binary classification.
+    For multiclass problems, it uses one-vs-rest approach (class 1 vs others).
+    """
     df = pd.DataFrame({
         "y_true": y_true,
         "y_pred": y_pred,
@@ -10,16 +16,30 @@ def compute_group_metrics(y_true, y_pred, sensitive):
 
     groups = df["sensitive"].unique()
     results = {}
+    
+    # Detect if binary or multiclass
+    unique_true = df["y_true"].unique()
+    unique_pred = df["y_pred"].unique()
+    
+    # For multiclass, convert to binary (positive class vs rest)
+    # Assume the highest class value is the "positive" class
+    if len(unique_true) > 2 or len(unique_pred) > 2:
+        positive_class = max(df["y_true"].unique())
+        df["y_true_binary"] = (df["y_true"] == positive_class).astype(int)
+        df["y_pred_binary"] = (df["y_pred"] == positive_class).astype(int)
+    else:
+        df["y_true_binary"] = df["y_true"]
+        df["y_pred_binary"] = df["y_pred"]
 
     for g in groups:
         group_df = df[df["sensitive"] == g]
-        approval_rate = group_df["y_pred"].mean()
+        approval_rate = group_df["y_pred_binary"].mean()
 
-        positives = group_df[group_df["y_true"] == 1]
-        tpr = positives["y_pred"].mean() if len(positives) > 0 else 0
+        positives = group_df[group_df["y_true_binary"] == 1]
+        tpr = positives["y_pred_binary"].mean() if len(positives) > 0 else 0
 
-        negatives = group_df[group_df["y_true"] == 0]
-        fpr = negatives["y_pred"].mean() if len(negatives) > 0 else 0
+        negatives = group_df[group_df["y_true_binary"] == 0]
+        fpr = negatives["y_pred_binary"].mean() if len(negatives) > 0 else 0
 
         results[g] = {
             "approval_rate": approval_rate,
